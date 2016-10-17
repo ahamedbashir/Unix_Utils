@@ -73,6 +73,44 @@ int main(int argc, char *argv[])
 	}
 
 	/* TODO: write me... */
-
+	
+	char newc;
+	string word = "";
+	set<string> uwords;
+	typedef unsigned long type;
+	type charcount(0), wordcount(0), linecount(0),longestline(0),cur_line_length(0);
+	while ( fread(&newc,1,1,stdin)) 	{
+		charcount++;
+		if(newc != '\n' )
+			cur_line_length++;
+		else if(newc == '\n'){
+			linecount++;
+			if(cur_line_length > longestline)
+				longestline = cur_line_length;
+				cur_line_length = 0;
+			}
+		if ( !isspace(newc) && newc!='\0' )
+			word+=newc;
+		else if( (isspace(newc) || newc == '\0') && !word.empty() ){
+			wordcount++;
+			uwords.insert(word);
+			word = "";
+		}
+	}
+		if ( linesonly + wordsonly + charonly +uwordsonly +longonly > 1 )
+			printf("\t");
+		if( linesonly )
+			printf("%lu \t", linecount );
+		if( wordsonly )
+			printf("%lu \t", wordcount ); 
+		if( charonly )
+			printf("%lu \t", charcount );
+		if ( longonly )
+			printf("%lu \t", longestline );
+		if( uwordsonly )
+			printf("%lu \t",uwords.size() );
+		if(!(linesonly||wordsonly||charonly||longonly || uwordsonly))
+			printf("\t %lu \t %lu \t %lu ",linecount, wordcount, charcount);
+		printf("\n");
 	return 0;
 }
