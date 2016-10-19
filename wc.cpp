@@ -74,29 +74,46 @@ int main(int argc, char *argv[])
 
 	/* TODO: write me... */
 	
-	char newc;
-	string word = "";
+	size_t charcount(0), bytecount (0), wordcount (0), linecount(0),cur_line_length(0), max_line_length(0);
 	set<string> uwords;
-	typedef unsigned long type;
-	type charcount(0), wordcount(0), linecount(0),longestline(0),cur_line_length(0);
-	while ( fread(&newc,1,1,stdin)) 	{
+	string word = "";	
+	enum states { WhiteSp, N_Word };
+	int state = WhiteSp;
+	
+	char newc;
+	while (fread(&newc,1,1,stdin) ) {
+		bytecount++;
 		charcount++;
-		if(newc != '\n' )
-			cur_line_length++;
-		else if(newc == '\n'){
-			linecount++;
-			if(cur_line_length > longestline)
-				longestline = cur_line_length;
-				cur_line_length = 0;
-			}
+
 		if ( !isspace(newc) && newc!='\0' )
 			word+=newc;
 		else if( (isspace(newc) || newc == '\0') && !word.empty() ){
-			wordcount++;
 			uwords.insert(word);
 			word = "";
 		}
-	}
+		if ( newc == '\t')
+			cur_line_length+= 8 - (cur_line_length % 8 );
+		else if ( newc != '\n')
+			cur_line_length++;
+
+		if ( newc== ' ' || newc == '\t'  )
+			state = WhiteSp;
+		else if (newc=='\n') {
+			linecount++;
+			if ( cur_line_length > max_line_length)
+				max_line_length = cur_line_length;
+			cur_line_length = 0;
+			state = WhiteSp;
+			}
+		else {
+			if ( state == WhiteSp ) {
+				wordcount++;
+				}
+			state = N_Word;
+			}
+		}
+
+
 		if ( linesonly + wordsonly + charonly +uwordsonly +longonly > 1 )
 			printf("\t");
 		if( linesonly )
@@ -106,7 +123,7 @@ int main(int argc, char *argv[])
 		if( charonly )
 			printf("%lu \t", charcount );
 		if ( longonly )
-			printf("%lu \t", longestline );
+			printf("%lu \t", max_line_length );
 		if( uwordsonly )
 			printf("%lu \t",uwords.size() );
 		if(!(linesonly||wordsonly||charonly||longonly || uwordsonly))
