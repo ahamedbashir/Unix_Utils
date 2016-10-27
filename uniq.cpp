@@ -5,6 +5,9 @@ using std::string;
 #include <iostream>
 using std::cin;
 using std::cout;
+using std::endl;
+#include <iomanip>
+using std::setw;
 
 static const char* usage =
 "Usage: %s [OPTIONS]...\n"
@@ -13,6 +16,7 @@ static const char* usage =
 "   -d,--repeated      only print duplicate lines.\n"
 "   -u,--unique        only print lines that are unique.\n"
 "   --help             show this message and exit.\n";
+
 
 int main(int argc, char *argv[]) {
 	// define long options
@@ -48,6 +52,39 @@ int main(int argc, char *argv[]) {
 	}
 
 	/* TODO: write me... */
+	string newline,line;
+	size_t linecount(0);
+	bool firstinput = true;
+	while(!feof(stdin)) {
+		getline(cin, newline);
+		if(firstinput) {
+			line = newline;
+			firstinput = false;
+			}
+		if( newline == line)
+			linecount++;
+		else if( newline!=line ) {
+	
+			if(showcount == 1 && dupsonly ==0 && uniqonly == 0 )
+				cout << setw(7) << linecount << " " <<line <<endl; //still skips last line
+			else if(showcount == 1 && dupsonly ==1 && uniqonly == 0 && linecount >1 )
+				cout << setw(7) << linecount << " " <<line <<endl; 
+			else if(showcount == 1 && dupsonly ==0 && uniqonly == 1 && linecount == 1 )
+				cout << setw(7) << linecount << " " <<line <<endl; 
+			else if(showcount == 0 && dupsonly ==1 && uniqonly == 0 && linecount >1 )
+				cout <<line <<endl; 
+			else if(showcount == 0 && dupsonly ==0 && uniqonly == 1 && linecount == 1 )
+				cout <<line <<endl; 
+			else if(showcount == 0 && dupsonly ==0 && uniqonly == 0 )
+				cout <<line <<endl; 
+			else if(showcount == 0 && dupsonly ==1 && uniqonly == 1 ) {
+				}
 
-	return 0;
+			linecount =1;
+			line = newline;
+		}
+		//line = newline;
+	}		
+	
+		return 0;
 }
