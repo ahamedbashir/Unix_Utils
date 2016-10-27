@@ -10,9 +10,17 @@ using std::vector;
 #include <iostream>
 using std::cin;
 using std::cout;
+using std::endl;
 #include <algorithm>
 using std::swap;
 using std::min;
+using std::random_shuffle;  // from algorithm library
+
+
+
+size_t myrandom ( size_t i) {
+	return rand()%i;
+	}
 
 static const char* usage =
 "Usage: %s [OPTIONS]...\n"
@@ -65,6 +73,64 @@ int main(int argc, char *argv[]) {
 	 * Even -i and -e are mutally exclusive... */
 
 	/* TODO: write me... */
+
+
+	srand(time(0)); //random initialization to use for permuation
+
+	if ( echo == 0 && !userange ) { 
+		string newline;
+		vector<string> lineinput;
+		while( getline(cin, newline) )
+			lineinput.push_back(newline);
+
+		random_shuffle ( lineinput.begin(), lineinput.end(), myrandom);
+	
+		if ( count >= 0 )
+			for ( size_t i =0; i < lineinput.size()&& i< count; i++ )
+				cout << lineinput[i] << endl;
+		else 
+			for ( vector<string>::iterator i = lineinput.begin(); i != lineinput.end(); ++i)
+				cout << *i << endl;
+
+		
+	}
+	
+	else if (echo ==0 && userange ) {
+		vector<size_t> rangeinput;
+		for (long i = rlow; i <= rhigh; i++ )
+			rangeinput.push_back(i);
+
+		random_shuffle ( rangeinput.begin(), rangeinput.end(), myrandom);
+	
+		if ( count >= 0 )
+			for ( size_t i =0; i < rangeinput.size()&& i< count; i++ )
+				cout << rangeinput[i] << endl;
+		else 
+			for ( vector<size_t>::iterator i = rangeinput.begin(); i != rangeinput.end(); ++i)
+				cout << *i << endl;
+
+
+
+	}
+
+
+	else if ( echo == 1 && !userange ) {
+		vector<string> arginput;
+		while ( optind < argc )
+			arginput.push_back(argv[optind++]);
+	
+		random_shuffle ( arginput.begin(), arginput.end(), myrandom);
+	
+		if ( count >= 0 )
+			for ( size_t i =0; i < arginput.size()&& i< count; i++ )
+				cout << arginput[i] << endl;
+		else 
+			for ( vector<string>::iterator i = arginput.begin(); i != arginput.end(); ++i)
+				cout << *i << endl;
+
+	}
+
+
 
 	return 0;
 }
