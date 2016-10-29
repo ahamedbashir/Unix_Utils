@@ -6,6 +6,7 @@ using std::string;
 using std::tolower;
 using std::toupper;
 #include <algorithm>
+using std::remove;
 using std::lexicographical_compare;
 #include <iostream>
 using std::cin;
@@ -30,19 +31,23 @@ struct igncaseComp {
 	}
 };
 
-/*
+
 struct icompare_char {
 	bool operator()(char c1, char c2) {
-		return toupper(c1) < toupper(c2);
+		return tolower(c1) < tolower(c2);
 	}
 };
 
 // return true if s1 comes before s2
 struct compare {
 	bool operator()(string const& s1, string const& s2) {
-		return lexicographical_compare(s1.begin(), s1.end(),s2.begin(), s2.end(), icompare_char());
-	}
-};*/
+		string temp1(s1), temp2(s2);
+			temp1.erase(remove(temp1.begin(), temp1.end(), '\t'), temp1.end());
+			temp2.erase(remove(temp2.begin(), temp2.end(), '\t'), temp2.end());
+		return (strcasecmp(temp1.c_str(),temp2.c_str()) < 0);
+		}
+};
+
 
 /* NOTE: set<string,igncaseComp> S; would declare a set S which
  * does its sorting in a case-insensitive way! */
@@ -83,9 +88,9 @@ int main(int argc, char *argv[]) {
 	/* TODO: write me... */
 	
 	set<string, igncaseComp> fuline;
-	set<string, igncaseComp>uline;    //problem when there is leading tab or whitespace
+	set<string, compare>uline;    //problem when there is leading tab or whitespace
 	multiset<string, igncaseComp> fmline;
-	multiset<string, igncaseComp> mline; //problem when there is leadding tab or white space
+	multiset<string, compare> mline; //problem when there is leadding tab or white space
 	string line;
 	while ( getline(cin,line) ) {
 		uline.insert(line);
@@ -95,12 +100,12 @@ int main(int argc, char *argv[]) {
 	}
 	
 	if (  descending == 0 && ignorecase == 0 && unique == 0 ) {
-		for (multiset<string,igncaseComp>::iterator i = mline.begin(); i != mline.end(); ++i )
+		for (multiset<string,compare>::iterator i = mline.begin(); i != mline.end(); ++i )
 			cout << *i << endl;
 	}
 	
 	else if (  descending == 1 && ignorecase == 0 && unique == 0 ) {
-		for (multiset<string,igncaseComp>::reverse_iterator i = mline.rbegin(); i != mline.rend(); ++i )
+		for (multiset<string,compare>::reverse_iterator i = mline.rbegin(); i != mline.rend(); ++i )
 			cout << *i << endl;
 	}
 
@@ -114,11 +119,11 @@ int main(int argc, char *argv[]) {
 	}
 
 	else if (  descending == 0 && ignorecase == 0 && unique == 1 ) {
-		for (set<string,igncaseComp>::iterator i = uline.begin(); i != uline.end(); ++i )
+		for (set<string,compare>::iterator i = uline.begin(); i != uline.end(); ++i )
 			cout << *i << endl;
 	}
 	else if (  descending == 1 && ignorecase == 0 && unique == 1 ) {
-		for (set<string,igncaseComp>::reverse_iterator i = uline.rbegin(); i != uline.rend(); ++i )
+		for (set<string,compare>::reverse_iterator i = uline.rbegin(); i != uline.rend(); ++i )
 			cout << *i << endl;
 	}
 
