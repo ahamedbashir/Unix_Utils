@@ -38,6 +38,57 @@ void escape(string& s) {
 	 * sequences by simply removing the backslash (silently) and
 	 * continuing with the translation as if it never appeared. */
 	/* TODO: write me... */
+	string temp;
+	char c;
+	for ( size_t i =0; i != s.size(); i++ ) {
+		if ( s[i] == '\\' && (i+1)!=s.size() ) {				//use a char c and string temp; then temp+=c; to fix the empty char problem
+			switch(s[i+1]) {
+				case '\\':
+					c = '\\';
+					i++;
+					break;
+				case 'a':
+					c = '\a';
+					i++;
+					break;
+				case 'b':
+					c = '\b';
+					i++;
+					break;
+				case 'f':
+					c = '\f';
+					i++;
+					break;
+				case 'n':
+					c = '\n';
+					i++;
+					break;
+				case 'r':
+					c = '\r';
+					i++;
+					break;
+				case 't':
+					c = '\t';
+					i++;
+					break;
+				case 'v':
+					c = '\v';
+					i++;
+					break;
+				default:
+				//	s[i] = '\0';
+					i++;  
+					c = s[i];
+					break;
+
+				}
+			temp+=c;
+			}
+		else if ( s[i] != '\\' || (i+1)!= s.size() )
+			 temp+= s[i];
+	}
+
+	s = temp;				
 }
 
 int main(int argc, char *argv[])
@@ -84,8 +135,40 @@ int main(int argc, char *argv[])
 	/* process any escape characters: */
 	escape(s1);
 	escape(s2);
-
+	
 	/* TODO: finish this... */
-
+	size_t n2 = s2.size(), found; // n2 to map all the char out of boundaries from string s2 to s1
+	char newc;
+	while(fread(&newc,1,1,stdin) ) {
+		if ( comp  == 0 && del == 0 ) {
+		//	if ( n1 <= n2 ) {
+			found = s1.find(newc);
+			if ( found != string::npos)
+				if ( found < n2 )
+					cout << s2[found];
+				else
+					cout << s2[n2-1];
+			else 
+				cout << newc;
+			}
+		else if ( comp == 0 && del == 1 ) {
+			found = s1.find(newc);
+			if ( found == string::npos)
+				cout << newc;	
+			}
+		else if ( comp == 1 && del == 0 ) {
+			found = s1.find(newc);
+			if ( found != string::npos)
+				cout << newc;
+			else
+				cout << s2[n2-1];
+			}
+		else if ( comp == 1 && del ==1 ) {
+			found = s1.find(newc);
+			if ( found != string::npos )
+				cout << newc;
+			}
+			
+	}
 	return 0;
 }
