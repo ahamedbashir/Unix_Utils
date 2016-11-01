@@ -103,17 +103,19 @@ int main(int argc, char *argv[])
 			if ( cur_line_length > max_line_length)
 				max_line_length = cur_line_length;
 			cur_line_length = 0;
+
 			state = WhiteSp;
 			}
 		else {
 			if ( state == WhiteSp ) {
 				wordcount++;
 				}
+
 			state = N_Word;
 			}
 		}
-
-
+		if ( cur_line_length > max_line_length)
+				max_line_length = cur_line_length;
 		if ( linesonly + wordsonly + charonly +uwordsonly +longonly > 1 )
 			printf("\t");
 		if( linesonly )
