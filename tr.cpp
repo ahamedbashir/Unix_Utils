@@ -98,6 +98,8 @@ void escape(string& s) {
 						}
 
 					}
+					if ( octal >127) 		// to fix problem with my current linux kernel
+						octal =127;
 					c = (unsigned char)octal;		
 					break;
 				default: 
