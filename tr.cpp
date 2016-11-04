@@ -25,7 +25,8 @@ using std::vector;
 using std::sort;
 #include <string.h> // for c-string functions.
 #include <getopt.h> // to parse long arguments.
-
+#include <map>
+using std::map;
 static const char* usage =
 "Usage: %s [OPTIONS] SET1 [SET2]\n"
 "Limited clone of tr.  Supported options:\n\n"
@@ -39,7 +40,8 @@ void escape(string& s) {
 	 * continuing with the translation as if it never appeared. */
 	/* TODO: write me... */
 	string temp;
-	char c;
+	unsigned int octal, octint;
+	unsigned char c;
 	for ( size_t i =0; i != s.size(); i++ ) {
 		if ( s[i] == '\\' && (i+1)!=s.size() ) {				//use a char c and string temp; then temp+=c; to fix the empty char problem
 			switch(s[i+1]) {
@@ -75,20 +77,88 @@ void escape(string& s) {
 					c = '\v';
 					i++;
 					break;
-				default:
-				//	s[i] = '\0';
-					i++;  
+				case '0':
+				case '1':
+				case '2':
+				case '3':
+				case '4':
+				case '5':
+				case '6':
+				case '7':
+					i++;
+					octal = s[i]-'0';
+					octint = s[i+1]-'0';
+					if ( octint >=0 && octint <= 7) {   // if range is
+						octal = 8*octal + octint;
+						i++;
+						octint = s[i+1]-'0';
+						if ( octint >=0 && octint <= 7) {
+							octal = 8*octal + octint;
+							i++;
+						}
+
+					}
+					c = (unsigned char)octal;		
+					break;
+				default: 
+					i++;
 					c = s[i];
 					break;
 
 				}
 			temp+=c;
 			}
+
 		else if ( s[i] != '\\' || (i+1)!= s.size() )
 			 temp+= s[i];
 	}
-
 	s = temp;				
+}
+
+
+
+
+
+// Function to covert valid range of the string into complete string;
+void range( string& s ) {
+	string temp;
+	for ( size_t i =0; i < s.length(); i++ ) {			
+		if ( s[i] == '-') {
+			if ( i >0 && i < (s.length()-1) && s[i-1] < s[i+1] ) {
+				char c = s[i-1]+1;
+				while ( c != s[i+1] ) {
+					temp+=c++;
+					}
+				}
+			}
+		else
+			temp+= s[i];
+		}
+	s = temp;
+}
+
+
+void complementMap( map< unsigned char, unsigned char>& charmap, const string& s1, const string& s2) {
+		
+	unsigned char cur_char;
+	for ( size_t i =0; i <256; i++) {		//initialize all the chars into the map key
+		cur_char = (unsigned char)i;
+		charmap[cur_char];
+		}
+
+	for ( size_t i =0; i < s1.length(); i++ )		// removes all the char keys from string s1
+		charmap.erase(s1[i]);
+	
+	map<unsigned char, unsigned char>::iterator it;
+	size_t j =0;
+	for( it = charmap.begin(); it!=charmap.end(); it++) {
+		if(j<s2.length() )
+			it->second = s2[j];
+		else
+			it->second = s2[s2.length()-1];
+		j++;
+	
+		}
 }
 
 int main(int argc, char *argv[])
@@ -135,13 +205,14 @@ int main(int argc, char *argv[])
 	/* process any escape characters: */
 	escape(s1);
 	escape(s2);
-	
 	/* TODO: finish this... */
+
+	range(s1);
+	range(s2);
 	size_t n2 = s2.size(), found; // n2 to map all the char out of boundaries from string s2 to s1
 	char newc;
 	while(fread(&newc,1,1,stdin) ) {
 		if ( comp  == 0 && del == 0 ) {
-		//	if ( n1 <= n2 ) {
 			found = s1.find(newc);
 			if ( found != string::npos)
 				if ( found < n2 )
@@ -157,11 +228,19 @@ int main(int argc, char *argv[])
 				cout << newc;	
 			}
 		else if ( comp == 1 && del == 0 ) {
-			found = s1.find(newc);
+			/*found = s1.find(newc);
 			if ( found != string::npos)
 				cout << newc;
 			else
-				cout << s2[n2-1];
+				cout << s2[n2-1];*/
+			map< unsigned char, unsigned char>CompMap;
+			complementMap(CompMap, s1, s2);
+			map< unsigned char, unsigned char>::iterator it;
+			it = CompMap.find(newc);
+			if(it!=CompMap.end() )
+				cout << it->second;
+			else
+				cout << newc;
 			}
 		else if ( comp == 1 && del ==1 ) {
 			found = s1.find(newc);
@@ -169,6 +248,8 @@ int main(int argc, char *argv[])
 				cout << newc;
 			}
 			
-	}
+	} 
 	return 0;
 }
+
+
